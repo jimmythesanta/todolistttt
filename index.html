@@ -1,0 +1,134 @@
+<html>
+<head>
+<title>todo</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000FF">
+<center>
+<font face="Comic Sans MS" size="6" color="red"><b>~~~ MY TODO LIST ~~~</b></font>
+<marquee behavior="alternate" scrollamount="6"><font size="2" color="blue">get things done!!!</font></marquee>
+</center>
+
+<hr>
+
+<table border="1" cellpadding="8" cellspacing="0" width="500" align="center" bgcolor="#EEEEEE">
+<tr bgcolor="#CCCCCC">
+  <td colspan="2" align="center">
+    <font face="Comic Sans MS" size="3">enter a task and click ADD</font>
+  </td>
+</tr>
+<tr>
+  <td width="80%">
+    <input type="text" id="t" size="40" style="border:2px inset #999;">
+  </td>
+  <td width="20%" align="center">
+    <button onclick="add()" style="background:#DDD;border:2px outset #999;font-family:Comic Sans MS;cursor:pointer;">ADD</button>
+  </td>
+</tr>
+</table>
+
+<br>
+
+<div align="center">
+  <font face="Comic Sans MS" size="2">
+    <span id="count">0 tasks</span>
+  </font>
+</div>
+
+<br>
+
+<table id="list" border="1" cellpadding="6" cellspacing="0" width="500" align="center">
+</table>
+
+<br>
+
+<center>
+  <button onclick="wipe()" style="background:#FAA;border:2px outset #999;font-family:Comic Sans MS;cursor:pointer;color:#900;">
+    DELETE EVERYTHING
+  </button>
+</center>
+
+<br><br>
+<center>
+<font size="1" color="#888">best viewed in internet explorer 6 at 800x600</font>
+</center>
+
+<script>
+    var tasks = [];
+
+    function add() {
+        var v = document.getElementById('t').value;
+
+        // no trimming, no empty check — just add whatever
+        tasks.push({ text: v, done: false });
+
+        document.getElementById('t').value = '';
+        document.getElementById('t').focus();
+
+        render();
+    }
+
+    function toggle(i) {
+        tasks[i].done = !tasks[i].done;
+        render();
+    }
+
+    function removeTask(i) {
+        // no confirmation, no undo — just gone
+        tasks.splice(i, 1);
+        render();
+    }
+
+    function wipe() {
+        // the only "safety" is this ugly alert
+        if (alert('Delete ALL tasks? This cannot be undone!') == undefined) {
+            tasks = [];
+            render();
+        }
+    }
+
+    function render() {
+        var table = document.getElementById('list');
+        table.innerHTML = '';
+
+        // header row, always
+        var header = table.insertRow(0);
+        header.bgColor = '#CCCCCC';
+        header.innerHTML =
+            '<td width="30" align="center"><font size="1"><b>DONE</b></font></td>' +
+            '<td><font size="1"><b>TASK</b></font></td>' +
+            '<td width="50" align="center"><font size="1"><b>DEL</b></font></td>';
+
+        for (var i = 0; i < tasks.length; i++) {
+            var row = table.insertRow(i + 1);
+            var t = tasks[i];
+
+            // checkbox cell
+            var c1 = row.insertCell(0);
+            c1.align = 'center';
+            c1.innerHTML = '<input type="checkbox" ' + (t.done ? 'checked' : '') +
+                           ' onclick="toggle(' + i + ')">';
+
+            // text cell — even empty tasks render fine
+            var c2 = row.insertCell(1);
+            if (t.done) {
+                c2.innerHTML = '<strike><font color="#999">' + t.text + '</font></strike>';
+            } else {
+                c2.innerHTML = t.text;
+            }
+
+            // delete cell
+            var c3 = row.insertCell(2);
+            c3.align = 'center';
+            c3.innerHTML = '<a href="#" onclick="removeTask(' + i + ');return false;" ' +
+                           'style="color:red;text-decoration:none;font-weight:bold;">X</a>';
+        }
+
+        // row count — wrong when list is empty (says "0 tasks" but header row exists)
+        document.getElementById('count').innerHTML = tasks.length + ' tasks';
+    }
+
+    // enter key does nothing — you must click ADD
+    render();
+</script>
+</body>
+</html>
